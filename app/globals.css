@@ -1,0 +1,284 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root[data-theme="light"] {
+  --background: #F9F5EC;
+  /* Soft Cream */
+  --background2: #E6D8C7;
+  /* Warm Beige */
+  --backgroundColor: #F4EAE0;
+  /* Light Sand */
+  --primaryColor: #FF914D;
+  /* Playful Orange */
+  --primary1: #D87837;
+  /* Warm Rust */
+  --primary2: #B85C2D;
+  /* Rich Brown */
+  --secondaryColor: #5E503F;
+  /* Deep Earthy Brown */
+  --secondaryColor2: #6c6154;
+  /* Muted Brown */
+  --textColor: #5E503F;
+  /* Primary Text Color (Dark Brown) */
+  --textColor2: #8A745C;
+  /* Secondary Text Color (Muted Brown) */
+  --textColor3: #FFFFFF;
+  /* Light Text Color (White) */
+  --textColor4: #D2A97A;
+  /* Accent Text Color (Light Brown) */
+  --c1: #bdbdbd;
+  /* Gray */
+  --c2: #ef9090;
+  /* Light Red */
+  --c3: #a4a4a451;
+  /* Transparent Gray */
+  --c4: #e86363;
+  /* Red */
+}
+
+:root[data-theme="dark"] {
+  --background: #1E1B18;
+  /* Dark Background */
+  --background2: #2A2420;
+  /* Darker Background */
+  --backgroundColor: #3B302A;
+  /* Dark Sand */
+  --primaryColor: #FF9F68;
+  /* Light Orange */
+  --primary1: #D97A42;
+  /* Rust */
+  --primary2: #B85C2D;
+  /* Dark Rust */
+  --secondaryColor: #E5CBA8;
+  /* Light Beige */
+  --secondaryColor2: #a99d8f;
+  /* Muted Beige */
+  --textColor: #F4EDE6;
+  /* Light Text Color (Cream) */
+  --textColor2: #D2A97A;
+  /* Accent Text Color (Light Brown) */
+  --textColor3: #54350E;
+  /* Dark Brown */
+  --textColor4: #8A745C;
+  /* Muted Brown */
+  --c3: #00000051;
+  /* Transparent Black */
+}
+
+:root[data-theme="light"] .shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
+    0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #00000000),
+    var(--tw-ring-shadow, 0 0 #00000000), var(--tw-shadow);
+}
+
+:root[data-theme="dark"] .shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.1),
+    0 4px 6px -4px rgba(255, 255, 255, 0.1);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
+    0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #ffffff00),
+    var(--tw-ring-shadow, 0 0 #ffffff00), var(--tw-shadow);
+}
+
+/* For WebKit browsers (Chrome, Edge, Safari) */
+html,
+body {
+  scrollbar-width: none;
+  scrollbar-color: var(--c2) transparent;
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--backgroundColor);
+  border-radius: 30px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--textColor);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--textColor2);
+}
+
+.text {
+  color: var(--secondaryColor);
+}
+
+.primary {
+  color: var(--primaryColor);
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: url('../public/background.svg');
+  background-repeat: repeat;
+  background-position-y: center;
+  background-color: var(--background2);
+  overflow: auto;
+}
+
+.bg {
+  height: 100%;
+  width: 100vw;
+  position: absolute;
+  background-color: #00000094;
+  z-index: 0;
+}
+
+@keyframes floatAnimation {
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  to {
+    transform: translateY(-30px) rotate(20deg);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+* {
+  -ms-overflow-style: none;
+}
+
+.row {
+  width: 100%;
+}
+
+.service {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.services_content h2 {
+  color: var(--primary1);
+}
+
+.wave {
+  fill: var(--background);
+  margin-bottom: -8px;
+  z-index: 10;
+}
+
+
+.acordionShadow {
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+
+:root[data-theme="dark"] .lead {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+:root[data-theme="dark"] .acordionShadow {
+  --tw-shadow: 0 10px 15px -3px rgba(188, 188, 188, 0.2), 0 4px 6px -4px rgba(183, 183, 183, 0.2);
+  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.acordion>svg {
+  stroke: var(--primaryColor);
+}
+
+.acordion:hover {
+  background-color: var(--color1);
+}
+
+.opened {
+  background-color: var(--color1);
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 10% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.nav-links>* {
+  transition: all 0.1s ease-in-out;
+}
+
+.nav-links>*:hover {
+  font-weight: 900;
+  transform: scale(1.1);
+}
