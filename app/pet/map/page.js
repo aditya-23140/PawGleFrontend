@@ -19,7 +19,7 @@ export default function PetMapPage() {
   const [locationError, setLocationError] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [selectedPet, setSelectedPet] = useState(null);
-
+  const [showContactModal, setShowContactModal] = useState(false);
   const BACKEND_API_PORT = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
 
   // Request user location permission
@@ -114,6 +114,204 @@ export default function PetMapPage() {
     fetchPets();
     setWindowWidth(window.innerHeight);
   }, [view, BACKEND_API_PORT]);
+
+
+  // Contact Modal Component
+  const ContactPetOwnerModal = ({ pet, isOpen, onClose }) => {
+    const [formData, setFormData] = useState({
+      contact_name: "",
+      contact_email: "",
+      contact_phone: "",
+      message: "",
+      image: null
+    });
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleImageChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setFormData(prev => ({ ...prev, image: file }));
+        setImagePreview(URL.createObjectURL(file));
+      }
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      setError(null);
+
+      try {
+        const formPayload = new FormData();
+        formPayload.append('pet_id', pet.id);
+        formPayload.append('message', formData.message);
+        formPayload.append('contact_name', formData.contact_name);
+        formPayload.append('contact_email', formData.contact_email);
+        formPayload.append('contact_phone', formData.contact_phone);
+
+        if (formData.image) {
+          formPayload.append('image', formData.image);
+        }
+
+        const response = await fetch(`${BACKEND_API_PORT}/api/auth/pets/contact-owner/`, {
+          method: 'POST',
+          body: formPayload,
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem("accessToken")}`,
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Failed to send message');
+        }
+
+        setSuccess(true);
+        setTimeout(() => {
+          onClose();
+          setSuccess(false);
+          setFormData({
+            contact_name: "",
+            contact_email: "",
+            contact_phone: "",
+            message: "",
+            image: null
+          });
+          setImagePreview(null);
+        }, 3000);
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-[var(--backgroundColor)] p-6 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="flex justify-between mb-4">
+            <h3 className="text-xl font-bold text-black">Contact Owner of {pet.animal_name}</h3>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+
+          {success ? (
+            <div className="p-4 mb-4 rounded-lg bg-green-600 text-white">
+              Your message has been sent successfully! The pet owner will be notified.
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4 text-black">
+              {error && (
+                <div className="p-4 mb-4 rounded-lg bg-red-600 text-white">
+                  {error}
+                </div>
+              )}
+
+              <div>
+                <p className="mb-4">
+                  Your contact information will be shared with the pet owner through our support team.
+                  You won't see their direct contact details, and they won't see yours.
+                </p>
+              </div>
+
+              <div>
+                <label className="block mb-1">Your Name*</label>
+                <input
+                  type="text"
+                  name="contact_name"
+                  value={formData.contact_name}
+                  onChange={handleChange}
+                  className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1">Your Email*</label>
+                <input
+                  type="email"
+                  name="contact_email"
+                  value={formData.contact_email}
+                  onChange={handleChange}
+                  className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1">Your Phone (Optional)</label>
+                <input
+                  type="tel"
+                  name="contact_phone"
+                  value={formData.contact_phone}
+                  onChange={handleChange}
+                  className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1">Message*</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                  rows={4}
+                  placeholder="Describe where and when you saw the pet, any identifying features, etc."
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1">Attach Image (Optional)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                />
+                {imagePreview && (
+                  <div className="mt-2 p-2 border rounded-lg">
+                    <p className="text-sm mb-2">Image preview:</p>
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="max-h-40 rounded-lg"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primaryColor)] text-[var(--textColor3)] hover:bg-[var(--primary1)] hover:text-[var(--textColor)]"
+                >
+                  {loading ? "Sending..." : "Send Message"}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -257,98 +455,109 @@ export default function PetMapPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  
-                    {pets.map((pet) => (
-                      <div
-                        key={pet.id}
-                        className="p-4 rounded-lg bg-[var(--background2)] cursor-pointer hover:bg-[var(--primary1)] transition-colors"
-                        onClick={() => {
-                          setMapCenter([parseFloat(pet.latitude), parseFloat(pet.longitude)]);
-                          setMapZoom(16);
-                          setSelectedPet(pet);
-                        }}
-                      >
-                        <div className="flex space-x-3">
-                          {pet.image_url && (
-                            <div className="w-20 h-20 flex-shrink-0">
-                              <img
-                                src={pet.image_url}
-                                alt={pet.animal_name}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            </div>
-                          )}
-                          <div>
-                            <div className="font-semibold">{pet.animal_name}</div>
-                            <div>{pet.type} {pet.breed}</div>
-                            <div className={`font-medium ${pet.status === 'lost' ? 'text-red-400' :
-                                pet.status === 'found' ? 'text-green-400' : 'text-gray-400'
-                              }`}>
-                              Status: {pet.status || 'Unknown'}
-                            </div>
-                            <div className="text-sm mt-2">
-                              {pet.last_seen_date ? `Last seen: ${pet.last_seen_date}` : ''}
-                            </div>
+
+                  {pets.map((pet) => (
+                    <div
+                      key={pet.id}
+                      className="p-4 rounded-lg bg-[var(--background2)] cursor-pointer hover:bg-[var(--primary1)] transition-colors"
+                      onClick={() => {
+                        setMapCenter([parseFloat(pet.latitude), parseFloat(pet.longitude)]);
+                        setMapZoom(16);
+                        setSelectedPet(pet);
+                      }}
+                    >
+                      <div className="flex space-x-3">
+                        {pet.image_url && (
+                          <div className="w-20 h-20 flex-shrink-0">
+                            <img
+                              src={pet.image_url}
+                              alt={pet.animal_name}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                        )}
+                        <div>
+                          <div className="font-semibold">{pet.animal_name}</div>
+                          <div>{pet.type} {pet.breed}</div>
+                          <div className={`font-medium ${pet.status === 'lost' ? 'text-red-400' :
+                            pet.status === 'found' ? 'text-green-400' : 'text-gray-400'
+                            }`}>
+                            Status: {pet.status || 'Unknown'}
+                          </div>
+                          <div className="text-sm mt-2">
+                            {pet.last_seen_date ? `Last seen: ${pet.last_seen_date}` : ''}
                           </div>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
 
                 </div>
               )}
             </div>
           </div>
           {selectedPet && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-[var(--backgroundColor)] p-6 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
-                  <div className="flex justify-between mb-4">
-                    <h3 className="text-xl font-bold text-black">{selectedPet.animal_name}</h3>
-                    <button
-                      onClick={() => setSelectedPet(null)}
-                      className="text-gray-400 hover:text-white"
-                    >
-                      ✕
-                    </button>
-                  </div>
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-[var(--backgroundColor)] p-6 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between mb-4">
+                  <h3 className="text-xl font-bold text-black">{selectedPet.animal_name}</h3>
+                  <button
+                    onClick={() => setSelectedPet(null)}
+                    className="text-gray-400 hover:text-white"
+                  >
+                    ✕
+                  </button>
+                </div>
 
-                  {selectedPet.image_url && (
-                    <div className="mb-4">
-                      <img
-                        src={selectedPet.image_url}
-                        alt={selectedPet.animal_name}
-                        className="w-full h-auto rounded-lg object-cover"
-                      />
-                    </div>
+                {selectedPet.image_url && (
+                  <div className="mb-4">
+                    <img
+                      src={selectedPet.image_url}
+                      alt={selectedPet.animal_name}
+                      className="w-full h-auto rounded-lg object-cover"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-2 text-black">
+                  <p><span className="font-semibold">Type:</span> {selectedPet.type}</p>
+                  <p><span className="font-semibold">Breed:</span> {selectedPet.breed}</p>
+                  <p><span className="font-semibold">Category:</span> {selectedPet.category}</p>
+                  <p className={`font-medium ${selectedPet.status === 'lost' ? 'text-red-400' :
+                      selectedPet.status === 'found' ? 'text-green-400' : 'text-gray-400'
+                    }`}>
+                    <span className="font-semibold">Status:</span> {selectedPet.status}
+                  </p>
+                  {selectedPet.description && (
+                    <p><span className="font-semibold">Description:</span> {selectedPet.description}</p>
+                  )}
+                  {selectedPet.last_seen_date && (
+                    <p><span className="font-semibold">Last seen:</span> {selectedPet.last_seen_date}</p>
                   )}
 
-                  <div className="space-y-2 text-black">
-                    <p><span className="font-semibold">Type:</span> {selectedPet.type}</p>
-                    <p><span className="font-semibold">Breed:</span> {selectedPet.breed}</p>
-                    <p><span className="font-semibold">Category:</span> {selectedPet.category}</p>
-                    <p className={`font-medium ${selectedPet.status === 'lost' ? 'text-red-400' :
-                      selectedPet.status === 'found' ? 'text-green-400' : 'text-gray-400'
-                      }`}>
-                      <span className="font-semibold">Status:</span> {selectedPet.status}
-                    </p>
-                    {selectedPet.description && (
-                      <p><span className="font-semibold">Description:</span> {selectedPet.description}</p>
-                    )}
-                    {selectedPet.last_seen_date && (
-                      <p><span className="font-semibold">Last seen:</span> {selectedPet.last_seen_date}</p>
-                    )}
-                    {selectedPet.contact_name && (
-                      <p><span className="font-semibold">Contact:</span> {selectedPet.contact_name}</p>
-                    )}
-                    {selectedPet.contact_phone && (
-                      <p><span className="font-semibold">Phone:</span> {selectedPet.contact_phone}</p>
-                    )}
-                    {selectedPet.contact_email && (
-                      <p><span className="font-semibold">Email:</span> {selectedPet.contact_email}</p>
-                    )}
+                  <div className="pt-4">
+                    <button
+                      onClick={() => {
+                        setShowContactModal(true);
+                      }}
+                      className="w-full py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primaryColor)] text-[var(--textColor3)] hover:bg-[var(--primary1)]"
+                    >
+                      Contact Owner Securely
+                    </button>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
+
+          {showContactModal && selectedPet && (
+            <ContactPetOwnerModal
+              pet={selectedPet}
+              isOpen={showContactModal}
+              onClose={() => setShowContactModal(false)}
+            />
+          )}
+
         </main>
         <Footer />
       </div>
