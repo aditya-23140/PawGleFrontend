@@ -2,10 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const Map = ({ markers = [], center = [0, 0], zoom = 13, height = "500px", onMapClick, onMarkerClick }) => {
+const Map = ({ 
+  markers = [], 
+  center, 
+  zoom = 13, 
+  height = "500px", 
+  onMapClick, 
+  onMarkerClick,
+  isDark = true // Add this prop with default value
+}) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const prevCenterRef = useRef(center);
+  const prevZoomRef = useRef(zoom);
 
   useEffect(() => {
     // First check if window is available (client-side only)
@@ -62,6 +72,11 @@ const Map = ({ markers = [], center = [0, 0], zoom = 13, height = "500px", onMap
               font-size: 12px;
               color: #6b7280;
             }
+            
+            /* Dark mode styles for map tiles */
+            .map-tiles-dark {
+              filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+            }
           `;
           document.head.appendChild(style);
         }
@@ -81,9 +96,10 @@ const Map = ({ markers = [], center = [0, 0], zoom = 13, height = "500px", onMap
           // Initialize map
           const map = L.map(mapRef.current).setView(center, zoom);
           
-          // Add tile layer
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          // Add tile layer with appropriate class for dark mode
+          const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            className: isDark ? 'map-tiles-dark' : '' // Apply dark mode class if isDark is true
           }).addTo(map);
           
           // Add click handler if provided
@@ -94,9 +110,42 @@ const Map = ({ markers = [], center = [0, 0], zoom = 13, height = "500px", onMap
           mapInstanceRef.current = map;
         }
         
-        // Update map center and zoom if changed
+        // Check if center or zoom has changed and update the map view
         if (mapInstanceRef.current) {
-          mapInstanceRef.current.setView(center, zoom);
+          // Compare current center with previous center
+          const centerChanged = 
+            !prevCenterRef.current || 
+            center[0] !== prevCenterRef.current[0] || 
+            center[1] !== prevCenterRef.current[1];
+          
+          // Compare current zoom with previous zoom
+          const zoomChanged = zoom !== prevZoomRef.current;
+          
+          // If either center or zoom changed, update the map view
+          if (centerChanged || zoomChanged) {
+            mapInstanceRef.current.setView(center, zoom, {
+              animate: true,
+              duration: 1
+            });
+            
+            // Update refs to current values
+            prevCenterRef.current = center;
+            prevZoomRef.current = zoom;
+          }
+          
+          // Update tile layer dark mode if isDark changed
+          mapInstanceRef.current.eachLayer((layer) => {
+            if (layer instanceof L.TileLayer) {
+              // Remove existing tile layer
+              mapInstanceRef.current.removeLayer(layer);
+              
+              // Add new tile layer with appropriate class
+              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                className: isDark ? 'map-tiles-dark' : ''
+              }).addTo(mapInstanceRef.current);
+            }
+          });
           
           // Clear existing markers
           mapInstanceRef.current.eachLayer((layer) => {
@@ -177,12 +226,12 @@ const Map = ({ markers = [], center = [0, 0], zoom = 13, height = "500px", onMap
         mapInstanceRef.current = null;
       }
     };
-  }, [markers, center, zoom, mapLoaded, onMapClick, onMarkerClick]);
+  }, [markers, center, zoom, mapLoaded, onMapClick, onMarkerClick, isDark]); // Add isDark to dependency array
 
   return (
     <div ref={mapRef} style={{ height, width: '100%', borderRadius: '0.5rem' }}>
       <div className="text-sm text-gray-400 mb-2">
-        Today is: Friday, March 28, 2025, 1:45 PM IST
+        Today is: Saturday, April 05, 2025, 11:23 AM IST
       </div>
     </div>
   );

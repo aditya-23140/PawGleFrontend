@@ -478,6 +478,7 @@ export default function ReportPetPage() {
                     zoom={selectedLocation ? 14 : 2}
                     height="100%"
                     onMapClick={handleMapClick}
+                    isDark={localStorage.getItem("modeR") === "dark" ? true : false}
                   />
                 </div>
 

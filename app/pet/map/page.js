@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import CirclesBackground from "@/components/background";
 import Map from "@/components/Map";
@@ -11,7 +10,7 @@ export default function PetMapPage() {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [view, setView] = useState("all"); // "all", "lost", "found"
+  const [view, setView] = useState("all");
   const [windowWidth, setWindowWidth] = useState(0);
   const [mapCenter, setMapCenter] = useState([0, 0]);
   const [mapZoom, setMapZoom] = useState(5);
@@ -20,6 +19,7 @@ export default function PetMapPage() {
   const [userLocation, setUserLocation] = useState(null);
   const [selectedPet, setSelectedPet] = useState(null);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [mapKey, setMapKey] = useState(0);
   const BACKEND_API_PORT = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
 
   // Request user location permission
@@ -75,9 +75,15 @@ export default function PetMapPage() {
 
     const fetchPets = async () => {
       try {
-        const endpoint = view === "all"
-          ? `${BACKEND_API_PORT}/api/auth/pets/locations/`
-          : `${BACKEND_API_PORT}/api/auth/pets/${view}/locations/`;
+        let endpoint;
+
+        if (view === "user") {
+          endpoint = `${BACKEND_API_PORT}/api/auth/user/pet-locations/`;
+        } else if (view === "all") {
+          endpoint = `${BACKEND_API_PORT}/api/auth/pets/locations/`;
+        } else {
+          endpoint = `${BACKEND_API_PORT}/api/auth/pets/${view}/locations/`;
+        }
 
         const response = await fetch(endpoint, {
           method: "GET",
@@ -115,6 +121,44 @@ export default function PetMapPage() {
     setWindowWidth(window.innerHeight);
   }, [view, BACKEND_API_PORT]);
 
+  const MapCenterer = ({ center, zoom }) => {
+    const map = useMap();
+    useEffect(() => {
+      if (center) {
+        map.setView(center, zoom);
+      }
+    }, [center, zoom, map]);
+    return null;
+  };
+  const handleResolveReport = async (locationId, e) => {
+    e.stopPropagation(); // Prevent triggering the parent onClick
+
+    try {
+      const response = await fetch(`${BACKEND_API_PORT}/api/auth/pets/locations/${locationId}/status/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ status: 'resolved' })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update pet status");
+      }
+
+      // Update the local state to reflect the change
+      setPets(prevPets =>
+        prevPets.map(pet =>
+          pet.id === locationId ? { ...pet, status: 'resolved' } : pet
+        )
+      );
+
+    } catch (err) {
+      console.error("Error resolving report:", err);
+      alert("Failed to resolve the report. Please try again.");
+    }
+  };
 
   // Contact Modal Component
   const ContactPetOwnerModal = ({ pet, isOpen, onClose }) => {
@@ -378,13 +422,25 @@ export default function PetMapPage() {
               >
                 Found Pets
               </button>
+              <button
+                onClick={() => setView("user")}
+                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${view === "user"
+                  ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
+                  : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
+                  }`}
+              >
+                My Pets
+              </button>
 
               {/* Center on user location button */}
               {userLocation && (
                 <button
                   onClick={() => {
-                    setMapCenter(userLocation);
-                    setMapZoom(14);
+                    if (userLocation) {
+                      setMapCenter(userLocation);
+                      setMapZoom(20);
+                      setMapKey(prev => prev + 1); // Force re-render
+                    }
                   }}
                   className="py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primary1)] text-[var(--textColor3)] hover:bg-[var(--primary2)]"
                 >
@@ -417,13 +473,13 @@ export default function PetMapPage() {
             ) : (
               <div className="h-[60vh] bg-[var(--background2)] rounded-lg overflow-hidden">
                 <Map
+                  key={mapKey}
                   markers={[
                     ...pets.map(pet => ({
                       ...pet,
                       latitude: parseFloat(pet.latitude),
                       longitude: parseFloat(pet.longitude),
-                      // Remove ID from what's displayed in popup
-                      image: pet.image_url || null // Add image URL to marker data
+                      image: pet.image_url || null
                     })),
                     ...(userLocation ? [{
                       id: "user-location",
@@ -438,10 +494,13 @@ export default function PetMapPage() {
                   zoom={mapZoom}
                   height="100%"
                   onMarkerClick={(pet) => {
-                    // Handle marker click - could set selected pet state
                     setSelectedPet(pet);
                   }}
-                />
+                  isDark={localStorage.getItem("modeR") === "dark" ? true : false}
+                >
+                  <MapCenterer center={mapCenter} zoom={mapZoom} />
+                </Map>
+
 
               </div>
             )}
@@ -476,7 +535,7 @@ export default function PetMapPage() {
                             />
                           </div>
                         )}
-                        <div>
+                        <div className="flex-grow">
                           <div className="font-semibold">{pet.animal_name}</div>
                           <div>{pet.type} {pet.breed}</div>
                           <div className={`font-medium ${pet.status === 'lost' ? 'text-red-400' :
@@ -488,6 +547,18 @@ export default function PetMapPage() {
                             {pet.last_seen_date ? `Last seen: ${pet.last_seen_date}` : ''}
                           </div>
                         </div>
+
+                        {/* Resolve button - only show in "user" view and if not already resolved */}
+                        {view === "user" && pet.status !== 'resolved' && (
+                          <div className="flex items-center">
+                            <button
+                              onClick={(e) => handleResolveReport(pet.id, e)}
+                              className="py-2 px-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+                            >
+                              Resolve
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -524,7 +595,7 @@ export default function PetMapPage() {
                   <p><span className="font-semibold">Breed:</span> {selectedPet.breed}</p>
                   <p><span className="font-semibold">Category:</span> {selectedPet.category}</p>
                   <p className={`font-medium ${selectedPet.status === 'lost' ? 'text-red-400' :
-                      selectedPet.status === 'found' ? 'text-green-400' : 'text-gray-400'
+                    selectedPet.status === 'found' ? 'text-green-400' : 'text-gray-400'
                     }`}>
                     <span className="font-semibold">Status:</span> {selectedPet.status}
                   </p>
@@ -534,8 +605,8 @@ export default function PetMapPage() {
                   {selectedPet.last_seen_date && (
                     <p><span className="font-semibold">Last seen:</span> {selectedPet.last_seen_date}</p>
                   )}
-
-                  <div className="pt-4">
+                  {selectedPet.status !== "resolved" ? (
+                    <div className="pt-4">
                     <button
                       onClick={() => {
                         setShowContactModal(true);
@@ -545,6 +616,11 @@ export default function PetMapPage() {
                       Contact Owner Securely
                     </button>
                   </div>
+                  ): (
+                      <></>
+                    )}
+
+                  
                 </div>
               </div>
             </div>

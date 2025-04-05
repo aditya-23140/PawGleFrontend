@@ -35,9 +35,8 @@ export default function SearchPetForm() {
     const token = localStorage.getItem("accessToken");
 
     const formData = new FormData();
-    files.forEach((file) => {
-      formData.append("images", file);
-    });
+    // Use the first image only - backend expects "image" not "images"
+    formData.append("image", files[0]);
 
     try {
       const response = await fetch(
@@ -57,7 +56,7 @@ export default function SearchPetForm() {
         alert("Failed to search for pets. Please try again.");
       } else {
         const data = await response.json();
-        setMatches(data.matches || []);
+        setMatches(data.results || []);
         console.log("Search results:", data);
         setSearchPerformed(true);
       }
@@ -88,28 +87,27 @@ export default function SearchPetForm() {
                 <div className="space-y-4">
                   <div>
                     <label
-                      htmlFor="images"
+                      htmlFor="image"
                       className="block text-sm font-semibold text-[var(--textColor2)] mb-1"
                     >
-                      Upload Photos
+                      Upload Photo
                     </label>
                     <div className="relative">
                       <input
                         type="file"
-                        id="images"
-                        name="images"
+                        id="image"
+                        name="image"
                         accept="image/*"
-                        multiple
                         onChange={handleFileChange}
                         className="hidden"
                       />
                       <label
-                        htmlFor="images"
+                        htmlFor="image"
                         className="flex items-center justify-center px-4 py-2 bg-[var(--primaryColor)] text-[var(--textColor3)] font-bold rounded-lg cursor-pointer hover:bg-[var(--primary1)] hover:text-[var(--textColor3)] hover:shadow-lg transition-all duration-300 ease-in-out"
                       >
                         {files.length > 0
                           ? `${files.length} file(s) selected`
-                          : "Choose Files"}
+                          : "Choose File"}
                       </label>
                     </div>
                   </div>
@@ -135,31 +133,28 @@ export default function SearchPetForm() {
                     >
                       <div className="details">
                         <h3 className="text-lg font-semibold text-[var(--textColor)]">
-                          {match.pet_details.name}
+                          {match.pet.name}
                         </h3>
                         <p className="text-sm text-[var(--textColor2)]">
-                          Type: {match.pet_details.type}
+                          Type: {match.pet.type}
                         </p>
                         <p className="text-sm text-[var(--textColor2)]">
-                          Breed: {match.pet_details.breed}
+                          Breed: {match.pet.breed}
                         </p>
                         <p className="text-sm text-[var(--textColor2)]">
                           Similarity: {(match.similarity * 100).toFixed(2)}%
                         </p>
                       </div>
                       <div className="images">
-                        {match.pet_details.images?.length > 0 && (
+                        {match.pet.images?.length > 0 && (
                           <div className="mt-2 relative">
-                            {match.pet_details.images.map((image, idx) => (
-                              <Image
-                                key={idx}
-                                width={100}
-                                height={100}
-                                src={`http://localhost:8000/media/${image}`}
-                                alt={`Pet image ${idx + 1}`}
-                                className="w-24 h-24 object-cover rounded-lg"
-                              />
-                            ))}
+                            <Image
+                              width={100}
+                              height={100}
+                              src={`${BACKEND_API_PORT}/media/${match.pet.images[0]}`}
+                              alt={`Pet image`}
+                              className="w-24 h-24 object-cover rounded-lg"
+                            />
                           </div>
                         )}
                       </div>

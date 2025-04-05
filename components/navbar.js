@@ -1,15 +1,75 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaCog, FaUser, FaMoon, FaSun } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { MdDashboard } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
 import Link from "next/link";
 import Image from "next/image";
+import { FaMapMarkedAlt } from "react-icons/fa";
+import { MdReport } from "react-icons/md";
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const BACKEND_API_PORT = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
+
+  const refreshToken = useCallback(async () => {
+    try {
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        setIsLoggedIn(false);
+        return;
+      }
+
+      const response = await fetch(`${BACKEND_API_PORT}/api/token/refresh/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          refresh: refreshToken,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.access);
+        setIsLoggedIn(true);
+        console.log("Token refreshed successfully");
+      } else {
+        // If refresh token is invalid, log the user out
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        setIsLoggedIn(false);
+      }
+    } catch (error) {
+      console.error("Error refreshing token:", error);
+    }
+  }, [BACKEND_API_PORT]);
+
+  // Check login status on component mount
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshTokenValue = localStorage.getItem("refreshToken");
+    setIsLoggedIn(!!accessToken && !!refreshTokenValue);
+    
+    if (accessToken && refreshTokenValue) {
+      refreshToken();
+    }
+  }, [refreshToken]);
+
+  // Set up periodic token refresh
+  useEffect(() => {
+    if (isLoggedIn) {
+      const refreshInterval = setInterval(() => {
+        refreshToken();
+      }, 3 * 60 * 1000); // 2 minutes in milliseconds
+      
+      return () => clearInterval(refreshInterval);
+    }
+  }, [isLoggedIn, refreshToken]);
 
   const toggleDropdown = (event) => {
     event.stopPropagation();
@@ -48,6 +108,7 @@ export default function Navbar() {
   const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
+    setIsLoggedIn(false);
     // window.location.reload();
   };
 
@@ -118,16 +179,27 @@ export default function Navbar() {
                     </Link>
                   </li>
                   <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
+                    <FaMapMarkedAlt />
+                    <Link href="/pet/map">
+                      <span>Map</span>
+                    </Link>
+                  </li>
+                  <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
+                    <MdReport />
+                    <Link href="/pet/report">
+                      <span>Report</span>
+                    </Link>
+                  </li>
+                  {/* {<li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
                     <FaCog />
                     <span>Settings</span>
-                  </li>
+                  </li>} */}
                   <li
                     className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2"
                     onClick={logout}
                   >
                     <FiLogOut className="text-[22px]" />
-                    {localStorage.getItem("accessToken") &&
-                      localStorage.getItem("refreshToken") ? (
+                    {isLoggedIn ? (
                       <Link href="/">
                         <span>LogOut</span>
                       </Link>
