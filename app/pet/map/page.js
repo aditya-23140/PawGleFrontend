@@ -161,7 +161,7 @@ export default function PetMapPage() {
   };
 
   // Contact Modal Component
-  const ContactPetOwnerModal = ({ pet, isOpen, onClose }) => {
+  const ContactPetOwnerModal = ({ petLocation, isOpen, onClose }) => {
     const [formData, setFormData] = useState({
       contact_name: "",
       contact_email: "",
@@ -194,7 +194,7 @@ export default function PetMapPage() {
 
       try {
         const formPayload = new FormData();
-        formPayload.append('pet_id', pet.id);
+        formPayload.append('pet_location_id', petLocation.id);
         formPayload.append('message', formData.message);
         formPayload.append('contact_name', formData.contact_name);
         formPayload.append('contact_email', formData.contact_email);
@@ -241,11 +241,17 @@ export default function PetMapPage() {
 
     if (!isOpen) return null;
 
+    // Determine pet name based on whether it's linked to a registered pet
+    const petName = petLocation.pet ? petLocation.pet.name : petLocation.pet_name || "Unknown Pet";
+
+    // Determine if this is a lost or found pet
+    const petStatus = petLocation.status === "lost" ? "Lost" : "Found";
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-[var(--backgroundColor)] p-6 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between mb-4">
-            <h3 className="text-xl font-bold text-black">Contact Owner of {pet.animal_name}</h3>
+            <h3 className="text-xl font-bold text-black">Contact About {petStatus} Pet: {petName}</h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white"
@@ -256,7 +262,7 @@ export default function PetMapPage() {
 
           {success ? (
             <div className="p-4 mb-4 rounded-lg bg-green-600 text-white">
-              Your message has been sent successfully! The pet owner will be notified.
+              Your message has been sent successfully! The person who reported this pet will be notified.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4 text-black">
@@ -268,8 +274,8 @@ export default function PetMapPage() {
 
               <div>
                 <p className="mb-4">
-                  Your contact information will be shared with the pet owner through our support team.
-                  You won't see their direct contact details, and they won't see yours.
+                  Your contact information will be shared through our support team.
+                  You won't see their direct contact details, and they won't see yours unless both parties agree.
                 </p>
               </div>
 
@@ -316,7 +322,10 @@ export default function PetMapPage() {
                   onChange={handleChange}
                   className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
                   rows={4}
-                  placeholder="Describe where and when you saw the pet, any identifying features, etc."
+                  placeholder={petLocation.status === "lost" ?
+                    "Describe where and when you saw the pet, any identifying features, etc." :
+                    "Describe your pet in detail to help confirm if this is your pet"
+                  }
                   required
                 />
               </div>
@@ -607,20 +616,20 @@ export default function PetMapPage() {
                   )}
                   {selectedPet.status !== "resolved" ? (
                     <div className="pt-4">
-                    <button
-                      onClick={() => {
-                        setShowContactModal(true);
-                      }}
-                      className="w-full py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primaryColor)] text-[var(--textColor3)] hover:bg-[var(--primary1)]"
-                    >
-                      Contact Owner Securely
-                    </button>
-                  </div>
-                  ): (
-                      <></>
-                    )}
+                      <button
+                        onClick={() => {
+                          setShowContactModal(true);
+                        }}
+                        className="w-full py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primaryColor)] text-[var(--textColor3)] hover:bg-[var(--primary1)]"
+                      >
+                        Contact Owner Securely
+                      </button>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
 
-                  
+
                 </div>
               </div>
             </div>
@@ -628,10 +637,11 @@ export default function PetMapPage() {
 
           {showContactModal && selectedPet && (
             <ContactPetOwnerModal
-              pet={selectedPet}
+              petLocation={selectedPet}
               isOpen={showContactModal}
               onClose={() => setShowContactModal(false)}
             />
+
           )}
 
         </main>

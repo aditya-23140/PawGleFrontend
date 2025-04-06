@@ -24,8 +24,9 @@ export default function ReportPetPage() {
     contact_email: "",
     last_seen_date: "",
     image: null,
+    register_pet: false, // New field to indicate if user wants to register a found pet
   });
-  
+
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [windowWidth, setWindowWidth] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,9 @@ export default function ReportPetPage() {
   const [locationError, setLocationError] = useState(null);
   const [showPermissionBanner, setShowPermissionBanner] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
-
+  const [userPets, setUserPets] = useState([]);
+  const [isSelectingExistingPet, setIsSelectingExistingPet] = useState(false);
+  const [selectedPetId, setSelectedPetId] = useState(null);
   const BACKEND_API_PORT = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
 
   const requestLocationPermission = () => {
@@ -55,7 +58,7 @@ export default function ReportPetPage() {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         }));
-        localStorage.setItem("location",userLocation);
+        localStorage.setItem("location", userLocation);
         setLocationPermission("granted");
       },
       (error) => {
@@ -91,6 +94,30 @@ export default function ReportPetPage() {
     });
   };
 
+  const handlePetSelectionTypeChange = (e) => {
+    setIsSelectingExistingPet(e.target.value === "existing");
+  };
+
+  // Handle existing pet selection
+  const handleExistingPetSelect = (e) => {
+    const petId = e.target.value;
+    setSelectedPetId(petId);
+
+    if (petId) {
+      const selectedPet = userPets.find(pet => pet.id.toString() === petId);
+      if (selectedPet) {
+        setPetData({
+          ...petData,
+          animal_name: selectedPet.name,
+          category: selectedPet.category,
+          type: selectedPet.type,
+          breed: selectedPet.breed,
+        });
+        setSelectedCategory(selectedPet.category);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -114,6 +141,11 @@ export default function ReportPetPage() {
         }
       });
 
+      // Add the selected pet ID if using an existing pet
+      if (isSelectingExistingPet && selectedPetId) {
+        formData.append('pet_id', selectedPetId);
+      }
+
       // Add the image file if it exists
       if (petData.image) {
         formData.append('image', petData.image);
@@ -123,7 +155,6 @@ export default function ReportPetPage() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          // Don't set Content-Type header when using FormData
         },
         body: formData,
       });
@@ -134,6 +165,7 @@ export default function ReportPetPage() {
       }
 
       setSuccess(true);
+      // Reset form
       setPetData({
         animal_name: "",
         category: "",
@@ -148,6 +180,7 @@ export default function ReportPetPage() {
         contact_email: "",
         last_seen_date: "",
         image: null,
+        register_pet: false,
       });
 
       setTimeout(() => {
@@ -263,70 +296,6 @@ export default function ReportPetPage() {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
-
-                  <div>
-                    <label className="block mb-1">Pet Name*</label>
-                    <input
-                      type="text"
-                      value={petData.animal_name}
-                      onChange={(e) => setPetData({ ...petData, animal_name: e.target.value })}
-                      className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block mb-1">Category</label>
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setPetData({ ...petData, category: e.target.value })}
-                      className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
-                    >
-                      <option value="">Select Category</option>
-                      {Object.keys(animalCategories).map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block mb-1">Type*</label>
-                    <select
-                      value={petData.type}
-                      onChange={(e) => setPetData({ ...petData, type: e.target.value })}
-                      className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
-                      required
-                    >
-                      <option value="">Select Type</option>
-                      {selectedCategory &&
-                        animalCategories[selectedCategory]?.types.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block mb-1">Breed*</label>
-                    <select
-                      value={petData.breed}
-                      onChange={(e) => setPetData({ ...petData, breed: e.target.value })}
-                      className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
-                      required
-                    >
-                      <option value="">Select Breed</option>
-                      {petData.type &&
-                        animalBreeds[petData.type]?.map((breed) => (
-                          <option key={breed} value={breed}>
-                            {breed}
-                          </option>
-                        ))}
-                    </select>
-                  </div>
-
                   <div>
                     <label className="block mb-1">Status*</label>
                     <select
@@ -339,6 +308,121 @@ export default function ReportPetPage() {
                       <option value="found">Found</option>
                     </select>
                   </div>
+
+                  {petData.status === "lost" && userPets.length > 0 && (
+                    <div>
+                      <label className="block mb-1">Report Type</label>
+                      <select
+                        onChange={handlePetSelectionTypeChange}
+                        className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                      >
+                        <option value="new">Report a new pet</option>
+                        <option value="existing">Select from my pets</option>
+                      </select>
+                    </div>
+                  )}
+
+                  {isSelectingExistingPet && petData.status === "lost" && (
+                    <div>
+                      <label className="block mb-1">Select Your Pet*</label>
+                      <select
+                        value={selectedPetId || ""}
+                        onChange={handleExistingPetSelect}
+                        className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                        required={isSelectingExistingPet}
+                      >
+                        <option value="">Select a pet</option>
+                        {userPets.map(pet => (
+                          <option key={pet.id} value={pet.id}>
+                            {pet.name} ({pet.type} - {pet.breed})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  {(!isSelectingExistingPet || petData.status === "found") && (
+                    <>
+                      <div>
+                        <label className="block mb-1">Pet Name*</label>
+                        <input
+                          type="text"
+                          value={petData.animal_name}
+                          onChange={(e) => setPetData({ ...petData, animal_name: e.target.value })}
+                          className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block mb-1">Category</label>
+                        <select
+                          value={selectedCategory}
+                          onChange={(e) => {
+                            setSelectedCategory(e.target.value);
+                            setPetData({ ...petData, category: e.target.value });
+                          }}
+                          className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                        >
+                          <option value="">Select Category</option>
+                          {Object.keys(animalCategories).map((category) => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block mb-1">Type*</label>
+                        <select
+                          value={petData.type}
+                          onChange={(e) => setPetData({ ...petData, type: e.target.value })}
+                          className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                          required
+                        >
+                          <option value="">Select Type</option>
+                          {selectedCategory &&
+                            animalCategories[selectedCategory]?.types.map((type) => (
+                              <option key={type} value={type}>
+                                {type}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block mb-1">Breed*</label>
+                        <select
+                          value={petData.breed}
+                          onChange={(e) => setPetData({ ...petData, breed: e.target.value })}
+                          className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
+                          required
+                        >
+                          <option value="">Select Breed</option>
+                          {petData.type &&
+                            animalBreeds[petData.type]?.map((breed) => (
+                              <option key={breed} value={breed}>
+                                {breed}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {petData.status === "found" && (
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="register_pet"
+                        checked={petData.register_pet}
+                        onChange={(e) => setPetData({ ...petData, register_pet: e.target.checked })}
+                        className="mr-2"
+                      />
+                      <label htmlFor="register_pet">Register this pet to my account</label>
+                    </div>
+                  )}
 
                   <div>
                     <label className="block mb-1">Description</label>
@@ -499,3 +583,6 @@ export default function ReportPetPage() {
     </>
   );
 }
+
+
+

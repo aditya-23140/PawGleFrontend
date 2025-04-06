@@ -164,7 +164,8 @@ const Map = ({
               } else if (marker.status === 'found') {
                 iconUrl = '/markers/found-marker.png'; // Use your custom marker image
               } else if (marker.status === 'user') {
-                iconUrl = '/markers/marker.png'; // Use your custom marker image
+                return;
+                // iconUrl = '/markers/marker.png'; // Use your custom marker image
               }
               
               const customIcon = new L.Icon({

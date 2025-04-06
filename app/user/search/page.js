@@ -57,7 +57,6 @@ export default function SearchPetForm() {
       } else {
         const data = await response.json();
         setMatches(data.results || []);
-        console.log("Search results:", data);
         setSearchPerformed(true);
       }
     } catch (error) {
@@ -127,6 +126,7 @@ export default function SearchPetForm() {
               {/* Display search results */}
               {matches.length > 0
                 ? matches.map((match, index) => (
+                  
                     <div
                       key={index}
                       className="p-4 bg-[var(--backgroundColor)] rounded-lg shadow-md mt-4 flex justify-between items-center"
