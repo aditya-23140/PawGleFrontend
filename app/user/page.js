@@ -67,7 +67,7 @@ const User = () => {
     }
   };
 
-  const reportPet = async (petId,petData) => {
+  const reportPet = async (petId, petData) => {
     localStorage.setItem("petReportData", JSON.stringify(petData));
     window.location.href = "/pet/report";
   }
@@ -94,7 +94,7 @@ const User = () => {
     <>
       <CirclesBackground height={windowWidth} />
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-[var(--background2)] to-[var(--backgroundColor)] text-white">
-        
+
         <main className="flex flex-col md:flex-row p-6 space-x-0 md:space-x-6 mt-20">
           <div className="w-full md:w-1/4 p-4 rounded-lg shadow-lg mb-6 md:mb-0 h-[84vh] overflow-y-auto scroll-smooth text-[var(--textColor)] bg-[var(--backgroundColor)] z-10">
             <h2 className="text-xl font-semibold mb-4">Recent Data</h2>
@@ -144,11 +144,12 @@ const User = () => {
               <h2 className="text-2xl font-semibold mb-4">Pets Registered</h2>
               {pets.length > 0 ? (
                 <ul className="space-y-4">
-                  {pets.map((pet) => (
-                    <li
+                  {pets.map((pet) => (<div key={pet.id}>
+                    {pet.features.length > 0 ? (<li
                       key={pet.id}
                       className="p-4 rounded-lg relative text-[var(--textColor)] bg-[var(--background2)]"
                     >
+                      {console.log(pet)}
                       <div>Name: {pet.name}</div>
                       <div>Type: {pet.type}</div>
                       <div>Breed: {pet.breed}</div>
@@ -185,13 +186,14 @@ const User = () => {
                           Delete
                         </button>
                         <button
-                          onClick={() => reportPet(pet.id,pet)}
+                          onClick={() => reportPet(pet.id, pet)}
                           className="py-2 px-4 rounded-lg shadow-lg transition duration-200 hover:scale-105 hover:bg-[var(--c4)] hover:text-[var(--textColor)] bg-[var(--c2)] text-[var(--textColor3)]"
                         >
                           Report
                         </button>
                       </div>
-                    </li>
+                    </li>) : (<></>)}</div>
+
                   ))}
                 </ul>
               ) : (

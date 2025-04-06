@@ -63,7 +63,7 @@ export default function PetMapPage() {
   };
 
   useEffect(() => {
-    // Check existing geolocation permission
+
     if (navigator.permissions) {
       navigator.permissions.query({ name: 'geolocation' }).then((result) => {
         setLocationPermission(result.state);
@@ -110,6 +110,7 @@ export default function PetMapPage() {
             setMapZoom(12);
           }
         }
+
       } catch (err) {
         setError(err.message);
       } finally {
@@ -121,6 +122,17 @@ export default function PetMapPage() {
     setWindowWidth(window.innerHeight);
   }, [view, BACKEND_API_PORT]);
 
+  useEffect(() => {
+    const storedPetData = localStorage.getItem("selected");
+    if (storedPetData) {
+      const parsedData = JSON.parse(storedPetData);
+      const matchedPet = pets.find(pet => pet.id === parsedData.id);
+      if (matchedPet) {
+        setSelectedPet(matchedPet);
+        localStorage.removeItem("selected");
+      }
+    }
+  })
   const MapCenterer = ({ center, zoom }) => {
     const map = useMap();
     useEffect(() => {
@@ -468,6 +480,12 @@ export default function PetMapPage() {
                 className="py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primary1)] text-[var(--textColor3)] hover:bg-[var(--primary2)] hover:text-[var(--textColor)]"
               >
                 Back to Profile
+              </Link>
+              <Link
+                href="/user/search"
+                className="py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primary1)] text-[var(--textColor3)] hover:bg-[var(--primary2)] hover:text-[var(--textColor)]"
+              >
+                Search Pet
               </Link>
             </div>
 

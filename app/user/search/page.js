@@ -5,6 +5,8 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import CirclesBackground from "@/components/background";
 import Image from "next/image";
+import { IoShareSharp } from "react-icons/io5";
+import Link from "next/link";
 
 export default function SearchPetForm() {
   const [files, setFiles] = useState([]);
@@ -126,45 +128,70 @@ export default function SearchPetForm() {
               {/* Display search results */}
               {matches.length > 0
                 ? matches.map((match, index) => (
-                  
-                    <div
-                      key={index}
-                      className="p-4 bg-[var(--backgroundColor)] rounded-lg shadow-md mt-4 flex justify-between items-center"
-                    >
-                      <div className="details">
-                        <h3 className="text-lg font-semibold text-[var(--textColor)]">
-                          {match.pet.name}
-                        </h3>
-                        <p className="text-sm text-[var(--textColor2)]">
-                          Type: {match.pet.type}
+
+                  <div
+                    key={index}
+                    className="p-4 bg-[var(--backgroundColor)] rounded-lg shadow-md mt-4 flex justify-between items-center"
+                  >
+                    <div className="details">
+                      <h3 className="text-lg font-semibold text-[var(--textColor)]">
+                        {match.pet.name}
+                      </h3>
+                      <p className="text-sm text-[var(--textColor2)]">
+                        Type: {match.pet.type}
+                      </p>
+                      <p className="text-sm text-[var(--textColor2)]">
+                        Breed: {match.pet.breed}
+                      </p>
+                      <p className="text-sm text-[var(--textColor2)]">
+                        Similarity: {(match.similarity * 100).toFixed(2)}%
+                      </p>
+                      {match.pet_location && (
+                        <p className="text-sm text-[var(--textColor2)] text-red-300">
+                          Status: {match.pet_location.status}
                         </p>
-                        <p className="text-sm text-[var(--textColor2)]">
-                          Breed: {match.pet.breed}
-                        </p>
-                        <p className="text-sm text-[var(--textColor2)]">
-                          Similarity: {(match.similarity * 100).toFixed(2)}%
-                        </p>
-                      </div>
-                      <div className="images">
-                        {match.pet.images?.length > 0 && (
-                          <div className="mt-2 relative">
-                            <Image
-                              width={100}
-                              height={100}
-                              src={`${BACKEND_API_PORT}/media/${match.pet.images[0]}`}
-                              alt={`Pet image`}
-                              className="w-24 h-24 object-cover rounded-lg"
-                            />
-                          </div>
-                        )}
-                      </div>
+                      )}
                     </div>
-                  ))
+                    <div className="images">
+                      {match.pet.images?.length > 0 && (
+                        <div className="mt-2 relative">
+                          <Image
+                            width={100}
+                            height={100}
+                            src={`${BACKEND_API_PORT}/media/${match.pet.images[0]}`}
+                            alt={`Pet image`}
+                            className="w-24 h-24 object-cover rounded-lg"
+                            />
+                        </div>
+                      )}
+                          {match.pet_location && (
+                            <Link
+                            href="/pet/map"
+                            className="ml-auto py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primary1)] text-[var(--textColor3)] hover:bg-[var(--primary2)] hover:text-[var(--textColor)]"
+                            onClick={localStorage.setItem("selected",JSON.stringify(match.pet_location))}
+                          >
+                            Report Pet
+                          </Link>
+                          )}
+                      {match.pet_location && (
+                        <div className="mt-2 relative">
+                          <Image
+                            width={100}
+                            height={100}
+                            src={match.pet_location.image_url}
+                            alt={`Pet image`}
+                            className="w-24 h-24 object-cover rounded-lg"
+                            />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
                 : searchPerformed && (
-                    <p className="text-center text-[var(--primaryColor)] font-bold bg-[var(--backgroundColor)] p-3 rounded-lg mt-4">
-                      ⚠️ No similar pet found. Try again with different images.
-                    </p>
-                  )}
+                  <p className="text-center text-[var(--primaryColor)] font-bold bg-[var(--backgroundColor)] p-3 rounded-lg mt-4">
+                    ⚠️ No similar pet found. Try again with different images.
+                  </p>
+                )}
             </div>
           </div>
         </div>
