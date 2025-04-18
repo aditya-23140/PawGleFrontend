@@ -97,10 +97,10 @@ const PawGle = () => {
             <ul className="flex space-x-8 nav-links">
               <li>
                 <Link
-                  href="/"
+                  href="/fun"
                   className="text hover:text-[var(--primaryColor)] transition duration-200 text-lg font-medium"
                 >
-                  Home
+                  Fun
                 </Link>
               </li>
               <li>
