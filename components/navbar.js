@@ -65,7 +65,7 @@ export default function Navbar() {
     if (isLoggedIn) {
       const refreshInterval = setInterval(() => {
         refreshToken();
-      }, 3 * 60 * 1000); // 2 minutes in milliseconds
+      }, 3 * 60 * 500); // 2 minutes in milliseconds
       
       return () => clearInterval(refreshInterval);
     }
