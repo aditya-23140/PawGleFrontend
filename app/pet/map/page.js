@@ -5,6 +5,7 @@ import Footer from "@/components/footer";
 import CirclesBackground from "@/components/background";
 import Map from "@/components/Map";
 import Link from "next/link";
+import Image from "next/image"
 
 export default function PetMapPage() {
   const [pets, setPets] = useState([]);
@@ -132,7 +133,7 @@ export default function PetMapPage() {
         localStorage.removeItem("selected");
       }
     }
-  })
+  }, [pets])
   const MapCenterer = ({ center, zoom }) => {
     const map = useMap();
     useEffect(() => {
@@ -287,7 +288,7 @@ export default function PetMapPage() {
               <div>
                 <p className="mb-4">
                   Your contact information will be shared through our support team.
-                  You won't see their direct contact details, and they won't see yours unless both parties agree.
+                  You won&apos;t see their direct contact details, and they won&apos;t see yours unless both parties agree.
                 </p>
               </div>
 
@@ -353,10 +354,13 @@ export default function PetMapPage() {
                 {imagePreview && (
                   <div className="mt-2 p-2 border rounded-lg">
                     <p className="text-sm mb-2">Image preview:</p>
-                    <img
+                    <Image
                       src={imagePreview}
                       alt="Preview"
                       className="max-h-40 rounded-lg"
+                      height={100}
+                      width={100}
+
                     />
                   </div>
                 )}
@@ -555,10 +559,12 @@ export default function PetMapPage() {
                       <div className="flex space-x-3">
                         {pet.image_url && (
                           <div className="w-20 h-20 flex-shrink-0">
-                            <img
+                            <Image
                               src={pet.image_url}
                               alt={pet.animal_name}
                               className="w-full h-full object-cover rounded-lg"
+                              height={100}
+                              width={100}
                             />
                           </div>
                         )}
@@ -609,10 +615,12 @@ export default function PetMapPage() {
 
                 {selectedPet.image_url && (
                   <div className="mb-4">
-                    <img
+                    <Image
                       src={selectedPet.image_url}
                       alt={selectedPet.animal_name}
                       className="w-full h-auto rounded-lg object-cover"
+                      height={100}
+                      width={100}
                     />
                   </div>
                 )}

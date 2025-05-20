@@ -7,6 +7,7 @@ import Map from "@/components/Map";
 import Link from "next/link";
 import Footer from "@/components/footer";
 import { animalBreeds, animalCategories } from "@/components/AnimalTypes";
+import Image from "next/image"
 
 export default function ReportPetPage() {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function ReportPetPage() {
   const [userPets, setUserPets] = useState([]);
   const [isSelectingExistingPet, setIsSelectingExistingPet] = useState(false);
   const [selectedPetId, setSelectedPetId] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const BACKEND_API_PORT = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
 
   const requestLocationPermission = () => {
@@ -58,7 +60,9 @@ export default function ReportPetPage() {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         }));
-        localStorage.setItem("location", userLocation);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem("location", userLocation);
+        }
         setLocationPermission("granted");
       },
       (error) => {
@@ -151,10 +155,12 @@ export default function ReportPetPage() {
         formData.append('image', petData.image);
       }
 
+      const accessToken = typeof window !== 'undefined' ? localStorage.getItem("accessToken") : null;
+      
       const response = await fetch(`${BACKEND_API_PORT}/api/auth/pets/report/`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: formData,
       });
@@ -195,35 +201,38 @@ export default function ReportPetPage() {
   };
 
   useEffect(() => {
-    // Check for pet data in localStorage
-    const storedPetData = localStorage.getItem("petReportData");
-    if (storedPetData) {
-      try {
-        const parsedData = JSON.parse(storedPetData);
-        setPetData(prev => ({
-          ...prev,
-          animal_name: parsedData.name || "N/A",
-          type: parsedData.type || "",
-          category: parsedData.category || "",
-          breed: parsedData.breed || "",
-          description: parsedData.additionalInfo?.subNotes?.join(", ") || "",
-        }));
-        setSelectedCategory(parsedData.category);
-        localStorage.removeItem("petReportData");
-      } catch (err) {
-        console.error("Error parsing stored pet data:", err);
-      }
-    }
-
-    setWindowWidth(window.innerHeight);
-
-    if (navigator.permissions) {
-      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        setLocationPermission(result.state);
-        if (result.state === "granted") {
-          requestLocationPermission();
+    if (typeof window !== 'undefined') {
+      // Check for pet data in localStorage
+      const storedPetData = localStorage.getItem("petReportData");
+      if (storedPetData) {
+        try {
+          const parsedData = JSON.parse(storedPetData);
+          setPetData(prev => ({
+            ...prev,
+            animal_name: parsedData.name || "N/A",
+            type: parsedData.type || "",
+            category: parsedData.category || "",
+            breed: parsedData.breed || "",
+            description: parsedData.additionalInfo?.subNotes?.join(", ") || "",
+          }));
+          setSelectedCategory(parsedData.category);
+          localStorage.removeItem("petReportData");
+        } catch (err) {
+          console.error("Error parsing stored pet data:", err);
         }
-      });
+      }
+
+      setWindowWidth(window.innerHeight);
+      setIsDarkMode(localStorage.getItem("modeR") === "dark");
+
+      if (navigator.permissions) {
+        navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+          setLocationPermission(result.state);
+          if (result.state === "granted") {
+            requestLocationPermission();
+          }
+        });
+      }
     }
   }, []);
 
@@ -238,7 +247,7 @@ export default function ReportPetPage() {
             {showPermissionBanner && locationPermission === "prompt" && (
               <div className="p-4 mb-6 rounded-lg bg-blue-600 text-white flex items-center justify-between">
                 <div>
-                  <p className="font-semibold">We'd like to use your location</p>
+                  <p className="font-semibold">We&apos;d like to use your location</p>
                   <p className="text-sm">This helps us show pets near you and set accurate locations for reports.</p>
                 </div>
                 <div>
@@ -451,10 +460,12 @@ export default function ReportPetPage() {
                   {petData.image && (
                     <div className="mt-2 p-2 border rounded-lg">
                       <p className="text-sm mb-2">Selected image:</p>
-                      <img
+                      <Image
                         src={URL.createObjectURL(petData.image)}
                         alt="Preview"
                         className="max-h-40 rounded-lg"
+                        height={100}
+                        width={100}
                       />
                     </div>
                   )}
@@ -562,7 +573,7 @@ export default function ReportPetPage() {
                     zoom={selectedLocation ? 14 : 2}
                     height="100%"
                     onMapClick={handleMapClick}
-                    isDark={localStorage.getItem("modeR") === "dark" ? true : false}
+                    isDark={isDarkMode}
                   />
                 </div>
 
@@ -583,6 +594,3 @@ export default function ReportPetPage() {
     </>
   );
 }
-
-
-

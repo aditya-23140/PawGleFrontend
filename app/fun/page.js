@@ -1237,11 +1237,13 @@ export default function PetMediaEditor() {
               />
               {selectedImagePreview && (
                 <div className="mt-3">
-                  <img
+                  <Image
                     src={selectedImagePreview || "/placeholder.svg"}
                     alt="Preview"
                     className="w-full h-auto mb-2 rounded"
                     style={{ maxHeight: 180, objectFit: "contain" }}
+                    height={100}
+                    width={100}
                   />
                   <button
                     onClick={importImageToCanvas}
@@ -1589,10 +1591,12 @@ export default function PetMediaEditor() {
                           >
                             {layer.thumbnail ? (
                               <div className="w-8 h-8 bg-white rounded overflow-hidden flex items-center justify-center">
-                                <img
+                                <Image
                                   src={layer.thumbnail || "/placeholder.svg"}
                                   alt={layer.name}
                                   className="max-w-full max-h-full"
+                                  height={100}
+                                  width={100}
                                 />
                               </div>
                             ) : (

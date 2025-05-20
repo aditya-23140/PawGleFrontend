@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { FaMapMarkedAlt } from "react-icons/fa";
 import { MdReport } from "react-icons/md";
+import { IoLogoOctocat } from "react-icons/io5";
 
 export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -176,6 +177,12 @@ export default function Navbar() {
                     <FaUser />
                     <Link href="/user">
                       <span>Profile</span>
+                    </Link>
+                  </li>
+                  <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
+                    <IoLogoOctocat />
+                    <Link href="/fun">
+                      <span>Editor</span>
                     </Link>
                   </li>
                   <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
