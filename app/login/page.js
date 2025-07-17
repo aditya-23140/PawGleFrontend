@@ -82,7 +82,7 @@ const LoginSignup = () => {
       <CirclesBackground height={windowHeight} />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[var(--background)] to-[var(--background2)] text-[var(--textColor)]">
         <motion.div
-          className="loginContainer bg-[var(--background2)] p-10 rounded-lg shadow-lg w-full max-w-md relative"
+          className={`loginContainer bg-[var(--background2)] p-10 rounded-lg shadow-lg w-full max-w-md border border-[var(--secondaryColor2)] relative mt-16`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -182,7 +182,7 @@ const LoginSignup = () => {
                 )}
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[var(--primaryColor)] rounded-lg text-[var(--textColor3)] hover:bg-[var(--primary1)] transition duration-200 shadow-md hover:shadow-lg"
+                  className="w-full py-3 bg-[var(--primaryColor)] rounded-lg text-[var(--textColor3)] hover:bg-[var(--primary1)] buttonExtra hover:scale-105 active:scale-90 active:rotate-0 shadow-md hover:shadow-lg"
                 >
                   {isSignUp ? "Sign Up" : "Log In"}
                 </button>
