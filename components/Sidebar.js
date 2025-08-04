@@ -3,7 +3,7 @@ import { ChevronRight } from "lucide-react";
 
 export function Sidebar({ categories, selectedCategory, onSelectCategory }) {
   return (
-    <div className="w-64 bg-[var(--backgroundColor)] text-[var(--textColor)] p-4 overflow-y-auto h-[82vh] border border-[var(--secondaryColor2)] pt-10 rounded-lg mb-4 ml-2 z-10">
+    <div className="w-64 backdrop-blur-xl testt text-[var(--textColor)] p-4 overflow-y-auto h-[82vh] border border-[var(--secondaryColor2)] pt-10 rounded-xl mb-4 ml-2 z-10">
       <h2 className="text-3xl font-semibold mb-4">Categories</h2>
       <nav className="-ml-4">
         {categories.map((category) => (

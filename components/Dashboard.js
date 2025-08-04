@@ -19,7 +19,7 @@ export default function Dashboard() {
           selectedCategory={selectedCategory}
           onSelectCategory={setSelectedCategory}
         />
-        <div className="mx-3 px-1 py-6 rounded-xl backdrop-blur-lg h-[82vh] border border-[var(--secondaryColor2)]">
+        <div className="mx-3 px-1 py-6 rounded-xl backdrop-blur-xl testt w-full h-[82vh] border border-[var(--secondaryColor2)]">
           <main className="flex-1 px-2 overflow-y-auto h-[76vh] scroll-smooth bg-[var(--background)] z-10">
             <h1 className="text-3xl font-bold mb-6 text-[var(--secondaryColor)]">
               <span className="underline">

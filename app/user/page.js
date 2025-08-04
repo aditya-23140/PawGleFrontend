@@ -114,11 +114,11 @@ const User = () => {
           <div className="w-full md:w-3/4 p-6 rounded-lg shadow-lg relative h-[84vh] overflow-y-auto scroll-smooth text-[var(--textColor)] bg-[var(--backgroundColor)]">
             <div className="flex items-center mb-6">
               <Image
-                src="/animal.png"
-                width={100}
-                height={100}
+                src="/profile.jpg"
+                width={150}
+                height={150}
                 alt="Profile"
-                className="rounded-full w-24 h-24 border-2"
+                className="rounded-full w-24 h-24 border-2 border-[var(--textColor)]"
               />
               <div className="ml-4">
                 <h1 className="text-2xl font-bold">

@@ -73,7 +73,17 @@ const LoginSignup = () => {
       localStorage.setItem("refreshToken", result.refresh);
       router.push("/user");
     } else {
-      setErrorMessage(result.detail || "An error occurred. Please try again.");
+      if (result.detail) {
+        setErrorMessage(result.detail);
+      } else if (result.non_field_errors) {
+        setErrorMessage(result.non_field_errors[0]);
+      } else if (result.username) {
+        setErrorMessage(result.username[0]);
+      } else if (result.password) {
+        setErrorMessage(result.password[0]);
+      } else {
+        setErrorMessage("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -111,12 +121,12 @@ const LoginSignup = () => {
                 {isSignUp && (
                   <div>
                     <label className="block text-sm text-[var(--textColor2)]">
-                      User Name
+                      Email
                     </label>
                     <input
-                      name="username"
-                      type="text"
-                      placeholder="Enter your User Name"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
                       className="w-full px-4 py-3 bg-[var(--backgroundColor)] rounded-lg text-[var(--textColor)] outline-none focus:ring-2 focus:ring-[var(--primaryColor)]"
                       required
                     />
@@ -124,12 +134,12 @@ const LoginSignup = () => {
                 )}
                 <div>
                   <label className="block text-sm text-[var(--textColor2)]">
-                    Email
+                    User Name
                   </label>
                   <input
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
+                    name="username"
+                    type="text"
+                    placeholder="Enter your User Name"
                     className="w-full px-4 py-3 bg-[var(--backgroundColor)] rounded-lg text-[var(--textColor)] outline-none focus:ring-2 focus:ring-[var(--primaryColor)]"
                     required
                   />
@@ -188,7 +198,7 @@ const LoginSignup = () => {
                 </button>
               </form>
               {errorMessage && (
-                <p className="text-[var(--primaryColor)] mt-4 text-center">
+                <p className="text-red-500 mt-4 text-center -mb-4">
                   {errorMessage}
                 </p>
               )}
