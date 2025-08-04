@@ -15,7 +15,6 @@ import { motion } from "framer-motion";
 import Footer from "@/components/footer";
 import Link from "next/link";
 import { RiCustomerService2Fill } from "react-icons/ri";
-import CirclesBackground from "@/components/background";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
 
@@ -30,18 +29,23 @@ const PawGle = () => {
     const savedMode = localStorage.getItem("modeR");
     const isDark = savedMode === "dark";
     setIsDarkMode(isDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDark ? "dark" : "light"
+    );
   }, []);
 
   useEffect(() => {
     localStorage.setItem("mode", isDarkMode ? "dark" : "light");
-    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDarkMode ? "dark" : "light"
+    );
   }, [isDarkMode]);
 
   const toggleTheme = () => {
     setIsDarkMode((prev) => !prev);
   };
-
 
   useEffect(() => {
     const userInfo = localStorage.getItem("accessToken");
@@ -85,7 +89,7 @@ const PawGle = () => {
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-transparent "></div> */}
 
-      <div className="bg"></div>
+      <div className="bg backdrop-blur-sm"></div>
       <header className="flex justify-between items-center px-8 py-3 shadow-lg fixed w-full z-50 bg-[var(--backgroundColor)]">
         <div className="text-4xl font-bold">
           <Link href="/">
@@ -169,8 +173,9 @@ const PawGle = () => {
 
       {/* Mobile Navigation Menu */}
       <div
-        className={`absolute left-0 w-full bg-[var(--backgroundColor)] shadow-md transition-all duration-300 overflow-hidden z-50 ${isNavOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-          }`}
+        className={`absolute left-0 w-full bg-[var(--backgroundColor)] shadow-md transition-all duration-300 overflow-hidden z-50 ${
+          isNavOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
         style={{
           top: "4rem", // Adjust this to be below navbar
           transition: "max-height 0.3s ease, opacity 0.3s ease",
@@ -214,9 +219,9 @@ const PawGle = () => {
           transition={{ duration: 0.5 }}
         >
           <div className="flex justify-center items-center mb-4">
-            <p className="text-green-400 text-sm font-bold flex items-center">
+            <p className="text-green-400 text-sm font-bold flex items-center py-1 bg-[var(--fun)] rounded-full px-4">
               <FaRocket className="mr-2 text-red-400" />
-              {petsCount ? petsCount : ""} NEW PETS REGISTERED THIS WEEK!
+              {petsCount ? petsCount : "0"} NEW PETS REGISTERED THIS WEEK!
             </p>
           </div>
           <h1 className="text-6xl font-bold text-[var(--primaryColor)] mb-4">
@@ -225,22 +230,9 @@ const PawGle = () => {
           <h1 className="text-6xl font-bold text-[var(--primaryColor)] mb-6">
             of Your Pets
           </h1>
-          <p className="text-[var(--primary2)] text-lg max-w-2xl mx-auto font-cursive mb-12">
+          <p className="text-[var(--primary2)] text-lg max-w-2xl mx-auto font-cursive mb-6">
             Say goodbye to the hassle of recognizing your furry friends!
           </p>
-
-          <div className="relative w-full flex justify-center mb-10">
-            <div className="flex bg-white rounded-full p-1 w-96 items-center shadow-lg transform translate-y-[-25%] transition duration-300 hover:scale-105">
-              <input
-                type="text"
-                placeholder="Search for pet name, breed, owner..."
-                className="flex-grow bg-transparent outline-none px-4 py-3 text-gray-900 rounded-l-full placeholder-gray-500"
-              />
-              <button className="bg-[var(--primary1)] text py-2 px-6 rounded-full transition hover:bg-[var(--primary2)]">
-                Search
-              </button>
-            </div>
-          </div>
         </motion.div>
       </main>
       <div className="flex z-1 py-20 px-6 pt-28 items-center justify-center flex-wrap gap-10 relative z-10">
@@ -331,15 +323,17 @@ const CustomAccordion = () => {
                 <button
                   type="button"
                   onClick={() => handleToggle(index)}
-                  className={`flex items-center justify-between w-full p-6 text-left font-semibold transition-all duration-200 acordion ${openIndex === index
+                  className={`flex items-center justify-between w-full p-6 text-left font-semibold transition-all duration-200 acordion ${
+                    openIndex === index
                       ? "opened rounded-t-xl"
                       : "rounded-lg acordionShadow"
-                    }`}
+                  }`}
                 >
                   <span>{item.title}</span>
                   <svg
-                    className={`w-5 h-5 shrink-0 transition-transform ${openIndex === index ? "transform rotate-180" : ""
-                      }`}
+                    className={`w-5 h-5 shrink-0 transition-transform ${
+                      openIndex === index ? "transform rotate-180" : ""
+                    }`}
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"

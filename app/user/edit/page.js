@@ -8,7 +8,7 @@ import { animalBreeds, animalCategories } from "@/components/AnimalTypes";
 export default function EditPetForm() {
   const [pet, setPet] = useState({
     name: "",
-    category: "",
+    category: "Domestic",
     type: "",
     breed: "",
     images: [],
@@ -21,6 +21,7 @@ export default function EditPetForm() {
     },
     subNote: "",
   });
+  const [errorMessage, setErrorMessage] = useState("");
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
   const [backgroundHeight, setBackgroundHeight] = useState("auto");
 
@@ -51,7 +52,7 @@ export default function EditPetForm() {
   };
 
   const removeImage = (image) => {
-    localStorage.setItem("img",image);
+    localStorage.setItem("img", image);
     setPet({
       ...pet,
       images: pet.images.filter((img) => img !== image),
@@ -99,6 +100,9 @@ export default function EditPetForm() {
         const text = await deleteResponse.text();
         console.error("Error deleting pet:", text);
       } else {
+        for (const pair of formData.entries()) {
+          console.log(pair[0] + ":", pair[1]);
+        }
         const postResponse = await fetch(
           `${BACKEND_API_PORT}/api/auth/pets/add/`,
           {
@@ -112,7 +116,9 @@ export default function EditPetForm() {
 
         if (!postResponse.ok) {
           const text = await postResponse.text();
-          console.error("Error adding new pet:", text);
+          const json = JSON.parse(text);
+          setErrorMessage(json.error);
+          console.log(errorMessage);
         } else {
           const data = await postResponse.json();
           console.log("Pet added successfully", data);
@@ -157,29 +163,6 @@ export default function EditPetForm() {
                       placeholder="Enter pet's name"
                       required
                     />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="category"
-                      className="block text-sm font-semibold text-[var(--textColor2)] mb-1"
-                    >
-                      Select Category
-                    </label>
-                    <select
-                      id="category"
-                      name="category"
-                      value={pet.category}
-                      onChange={(e) => handleChange("category", e.target.value)}
-                      className="w-full p-3 border border-[var(--secondaryColor2)] rounded-lg bg-[var(--backgroundColor)] text-[var(--textColor)] focus:border-[var(--primaryColor)] focus:ring-[var(--primaryColor)] outline-none transition duration-150 ease-in-out"
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {Object.keys(animalCategories).map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                   <div>
                     <label
@@ -243,8 +226,8 @@ export default function EditPetForm() {
                         id="images"
                         name="images"
                         accept="image/*"
-                        multiple
                         onChange={(e) => handleFileChange(e.target.files)}
+                        multiple
                         className="hidden"
                       />
                       <label
@@ -252,7 +235,7 @@ export default function EditPetForm() {
                         className="flex items-center justify-center px-4 py-2 bg-[var(--primaryColor)] text-[var(--textColor3)] font-bold rounded-lg cursor-pointer hover:bg-[var(--primary1)] hover:text-[var(--textColor3)] hover:shadow-lg transition-all duration-300 ease-in-out"
                       >
                         {pet.images.length > 0
-                          ? `${pet.images.length} file(s) selected`
+                          ? `1 file selected`
                           : "Choose File"}
                       </label>
                     </div>
@@ -261,13 +244,12 @@ export default function EditPetForm() {
                         <ul className="mt-2 text-[var(--textColor2)]">
                           {pet.images.map((image, index) => (
                             <li key={index} className="flex justify-between">
-                              <span>{image.name}</span>
+                              <span>{image.name || "IMG_1"}</span>
                               <button
                                 type="button"
                                 onClick={() => removeImage(image)}
                                 className="text-[var(--primaryColor)] hover:text-[var(--textColor3)]"
                               >
-
                                 Remove
                               </button>
                             </li>
@@ -294,7 +276,7 @@ export default function EditPetForm() {
                           htmlFor="weight"
                           className="block text-sm font-semibold text-[var(--textColor2)] mb-1"
                         >
-                          Weight
+                          Weight (KG)
                         </label>
                         <input
                           type="number"
@@ -316,7 +298,7 @@ export default function EditPetForm() {
                           htmlFor="height"
                           className="block text-sm font-semibold text-[var(--textColor2)] mb-1"
                         >
-                          Height
+                          Height (cm)
                         </label>
                         <input
                           type="number"
@@ -344,9 +326,9 @@ export default function EditPetForm() {
                           type="text"
                           id="subNote"
                           name="subNote"
-                          className="w-full p-3 border border-[var(--secondaryColor2)] rounded-lg bg-[var(--backgroundColor)] text-[var(--textColor)] focus:border-[var(--primaryColor)] focus:ring-[var(--primaryColor)] outline-none transition duration-150 ease-in-out"
+                          className="w-full p-3 border border-[var(--secondaryColor2)] rounded-lg bg-[var(--backgroundColor)] text-[var(--textColor)] focus:border-[var(--primaryColor)] focus:ring-[var(--primaryColor)] outline-none transition duration-150 ease-in-out mb-4"
                           placeholder="Add a sub-note"
-                          value={pet.subNote}
+                          value={pet.subNote || ""}
                           onChange={(e) =>
                             setPet({
                               ...pet,

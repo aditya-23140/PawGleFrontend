@@ -55,7 +55,7 @@ export default function Navbar() {
     const accessToken = localStorage.getItem("accessToken");
     const refreshTokenValue = localStorage.getItem("refreshToken");
     setIsLoggedIn(!!accessToken && !!refreshTokenValue);
-    
+
     if (accessToken && refreshTokenValue) {
       refreshToken();
     }
@@ -67,7 +67,7 @@ export default function Navbar() {
       const refreshInterval = setInterval(() => {
         refreshToken();
       }, 3 * 60 * 500); // 2 minutes in milliseconds
-      
+
       return () => clearInterval(refreshInterval);
     }
   }, [isLoggedIn, refreshToken]);
@@ -81,13 +81,19 @@ export default function Navbar() {
     const savedMode = localStorage.getItem("mode");
     const isDark = savedMode === "dark";
     setIsDarkMode(isDark);
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDark ? "dark" : "light"
+    );
   }, []);
 
   useEffect(() => {
     localStorage.setItem("modeR", isDarkMode ? "dark" : "light");
-    document.documentElement.setAttribute("data-theme", isDarkMode ? "dark" : "light");
-  }, [isDarkMode]); 
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDarkMode ? "dark" : "light"
+    );
+  }, [isDarkMode]);
 
   const toggleTheme = () => {
     setIsDarkMode((prev) => !prev);
@@ -115,20 +121,11 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="flex justify-between fixed w-full items-center px-6 py-5 shadow-lg z-20 bg-[var(--backgroundColor)]">
+      <header className="flex justify-between fixed w-[99%] rounded-3xl testt backdrop-blur-md items-center px-6 py-3 m-2 shadow-lg z-[100] bg-[var(--backgroundColor)/80] border border-[var(--secondaryColor2)]">
         <div className="text-3xl md:text-4xl font-bold text-[var(--secondaryColor)]">
           <Link href="/">
             Paw<span className="text-[var(--primaryColor)]">Gle</span>
           </Link>
-        </div>
-
-        {/* Search Bar */}
-        <div className="hidden md:flex items-center flex-grow max-w-xs space-x-3 mr-[100px]">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full px-4 py-2 rounded-md bg-white text-[var(--secondaryColor)] focus:outline-none focus:ring-1 focus:ring-[var(--secondaryColor)] shadow-lg"
-          />
         </div>
 
         {/* Profile & Theme Section */}
@@ -136,7 +133,7 @@ export default function Navbar() {
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-[var(--background2)] hover:bg-[var(--primaryColor)] transition duration-300"
+            className="p-2 rounded-full bg-[var(--background2)] buttonExtra hover:bg-[var(--nigga)]"
           >
             {isDarkMode === false ? (
               <FaMoon className="text-[var(--textColor)]" size={20} />
@@ -149,14 +146,14 @@ export default function Navbar() {
           <div className="relative">
             <button
               onClick={toggleDropdown}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 buttonExtra"
             >
               <Image
-                src="/animal.png"
+                src="/profile.jpg"
                 width={100}
                 height={100}
                 alt="Profile"
-                className="w-10 h-10 items-center rounded-full border-2 border-[var(--primaryColor)] bg-[var(--c2)]"
+                className="w-10 h-10 items-center rounded-full border border-[var(--primaryColor)] hover:bg-[var(--c2)] backdrop-blur-sm"
               />
             </button>
             {showDropdown && (
@@ -173,12 +170,16 @@ export default function Navbar() {
                       <span>Dashboard</span>
                     </Link>
                   </li>
-                  <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
-                    <FaUser />
-                    <Link href="/user">
-                      <span>Profile</span>
-                    </Link>
-                  </li>
+                  {isLoggedIn ? (
+                    <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
+                      <FaUser />
+                      <Link href="/user">
+                        <span>Profile</span>
+                      </Link>
+                    </li>
+                  ) : (
+                    ""
+                  )}
                   <li className="px-4 py-2 hover:bg-[var(--backgroundColor)] flex items-center space-x-2">
                     <IoLogoOctocat />
                     <Link href="/fun">

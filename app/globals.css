@@ -35,22 +35,25 @@
   /* Transparent Gray */
   --c4: #e86363;
   /* Red */
+  --nigga: #e89999;
+  --fun: #ffffffb9;
+  --glassbg: #ffffff93;
 }
 
 :root[data-theme="dark"] {
-  --background: #1E1B18;
+  --background: #292929;
   /* Dark Background */
-  --background2: #2A2420;
+  --background2: #212121;
   /* Darker Background */
-  --backgroundColor: #3B302A;
+  --backgroundColor: #000000;
   /* Dark Sand */
-  --primaryColor: #FF9F68;
+  --primaryColor: #ff8e4c;
   /* Light Orange */
-  --primary1: #D97A42;
+  --primary1: #eb9f72;
   /* Rust */
-  --primary2: #B85C2D;
+  --primary2: #a35c39;
   /* Dark Rust */
-  --secondaryColor: #E5CBA8;
+  --secondaryColor: #ffe2bc;
   /* Light Beige */
   --secondaryColor2: #a99d8f;
   /* Muted Beige */
@@ -64,6 +67,10 @@
   /* Muted Brown */
   --c3: #00000051;
   /* Transparent Black */
+  --nigga: #e89999;
+  --c2: #ef9090;
+  --fun: #000000b9;
+  --glassbg: #00000093;
 }
 
 :root[data-theme="light"] .shadow-lg {
@@ -102,7 +109,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--textColor);
+  background: var(--nigga);
   border-radius: 10px;
 }
 
@@ -118,6 +125,10 @@ body {
   color: var(--primaryColor);
 }
 
+.testt{
+  background-color: var(--glassbg);
+}
+
 body {
   font-family: Arial, Helvetica, sans-serif;
   background: url('../public/background.svg');
@@ -131,7 +142,7 @@ body {
   height: 100%;
   width: 100vw;
   position: absolute;
-  background-color: #00000094;
+  background-color: #86614811;
   z-index: 0;
 }
 
@@ -281,4 +292,10 @@ body {
 .nav-links>*:hover {
   font-weight: 900;
   transform: scale(1.1);
+}
+
+@layer utilities {
+  .buttonExtra {
+    @apply transition duration-100 hover:scale-110 active:rotate-12 active:scale-95;
+  }
 }

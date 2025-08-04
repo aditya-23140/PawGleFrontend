@@ -9,7 +9,7 @@ import { animalBreeds, animalCategories } from "@/components/AnimalTypes";
 export default function AddPetForm() {
   const [pet, setPet] = useState({
     name: "",
-    category: "",
+    category: "Domestic",
     type: "",
     breed: "",
     images: [], // Single image field
@@ -22,13 +22,14 @@ export default function AddPetForm() {
     },
     subNote: "", // Temporary value for the sub-note input
   });
+  const [errorMessage, setErrorMessage] = useState("");
   const [showAdditionalInfo, setShowAdditionalInfo] = useState(false); // To toggle the additional info section
   const [backgroundHeight, setBackgroundHeight] = useState("auto");
 
   const BACKEND_API_PORT = process.env.NEXT_PUBLIC_BACKEND_API_PORT;
 
   useEffect(() => {
-    setBackgroundHeight(window.innerHeight + 300);
+    setBackgroundHeight(window.innerHeight);
   }, []);
 
   const handleChange = (field, value) => {
@@ -84,7 +85,9 @@ export default function AddPetForm() {
 
       if (!response.ok) {
         const text = await response.text();
-        console.error("Error response:", text);
+        const json = JSON.parse(text);
+        setErrorMessage(json.error);
+        console.log(errorMessage);
       } else {
         const data = await response.json();
         console.log("Pet added successfully", data);
@@ -99,7 +102,6 @@ export default function AddPetForm() {
     <>
       <CirclesBackground height={backgroundHeight} />
       <div className="min-h-screen bg-[var(--background)] flex flex-col justify-start">
-
         <div className="flex mt-20 items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-lg w-full bg-[var(--background2)] rounded-2xl shadow-lg hover:shadow-xl overflow-hidden transform transition-all hover:scale-105 duration-500 ease-in-out">
             <div className="px-10 py-12">
@@ -130,30 +132,6 @@ export default function AddPetForm() {
                       placeholder="Enter pet's name"
                       required
                     />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="category"
-                      className="block text-sm font-semibold text-[var(--textColor2)] mb-1"
-                    >
-                      Select Category
-                    </label>
-                    <select
-                      id="category"
-                      name="category"
-                      value={pet.category}
-                      onChange={(e) => handleChange("category", e.target.value)}
-                      className="w-full p-3 border border-[var(--secondaryColor2)] rounded-lg bg-[var(--backgroundColor)] text-[var(--textColor)] focus:border-[var(--primaryColor)] focus:ring-[var(--primaryColor)] outline-none transition duration-150 ease-in-out"
-                      required
-                    >
-                      <option value="">Select Category</option>
-                      {Object.keys(animalCategories).map((category) => (
-                        <option key={category} value={category}>
-                          {category}
-                        </option>
-                      ))}
-                    </select>
                   </div>
 
                   <div>
@@ -387,6 +365,11 @@ export default function AddPetForm() {
                     Add Pet
                   </button>
                 </div>
+                {errorMessage && (
+                  <p className="text-red-500 text-center -mb-8">
+                    {errorMessage}
+                  </p>
+                )}
               </form>
             </div>
           </div>

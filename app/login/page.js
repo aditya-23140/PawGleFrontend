@@ -73,7 +73,17 @@ const LoginSignup = () => {
       localStorage.setItem("refreshToken", result.refresh);
       router.push("/user");
     } else {
-      setErrorMessage(result.detail || "An error occurred. Please try again.");
+      if (result.detail) {
+        setErrorMessage(result.detail);
+      } else if (result.non_field_errors) {
+        setErrorMessage(result.non_field_errors[0]);
+      } else if (result.username) {
+        setErrorMessage(result.username[0]);
+      } else if (result.password) {
+        setErrorMessage(result.password[0]);
+      } else {
+        setErrorMessage("An error occurred. Please try again.");
+      }
     }
   };
 
@@ -82,7 +92,7 @@ const LoginSignup = () => {
       <CirclesBackground height={windowHeight} />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[var(--background)] to-[var(--background2)] text-[var(--textColor)]">
         <motion.div
-          className="loginContainer bg-[var(--background2)] p-10 rounded-lg shadow-lg w-full max-w-md relative"
+          className={`loginContainer bg-[var(--background2)] p-10 rounded-lg shadow-lg w-full max-w-md border border-[var(--secondaryColor2)] relative mt-16`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -111,12 +121,12 @@ const LoginSignup = () => {
                 {isSignUp && (
                   <div>
                     <label className="block text-sm text-[var(--textColor2)]">
-                      User Name
+                      Email
                     </label>
                     <input
-                      name="username"
-                      type="text"
-                      placeholder="Enter your User Name"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
                       className="w-full px-4 py-3 bg-[var(--backgroundColor)] rounded-lg text-[var(--textColor)] outline-none focus:ring-2 focus:ring-[var(--primaryColor)]"
                       required
                     />
@@ -124,12 +134,12 @@ const LoginSignup = () => {
                 )}
                 <div>
                   <label className="block text-sm text-[var(--textColor2)]">
-                    Email
+                    User Name
                   </label>
                   <input
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email"
+                    name="username"
+                    type="text"
+                    placeholder="Enter your User Name"
                     className="w-full px-4 py-3 bg-[var(--backgroundColor)] rounded-lg text-[var(--textColor)] outline-none focus:ring-2 focus:ring-[var(--primaryColor)]"
                     required
                   />
@@ -182,13 +192,13 @@ const LoginSignup = () => {
                 )}
                 <button
                   type="submit"
-                  className="w-full py-3 bg-[var(--primaryColor)] rounded-lg text-[var(--textColor3)] hover:bg-[var(--primary1)] transition duration-200 shadow-md hover:shadow-lg"
+                  className="w-full py-3 bg-[var(--primaryColor)] rounded-lg text-[var(--textColor3)] hover:bg-[var(--primary1)] buttonExtra hover:scale-105 active:scale-90 active:rotate-0 shadow-md hover:shadow-lg"
                 >
                   {isSignUp ? "Sign Up" : "Log In"}
                 </button>
               </form>
               {errorMessage && (
-                <p className="text-[var(--primaryColor)] mt-4 text-center">
+                <p className="text-red-500 mt-4 text-center -mb-4">
                   {errorMessage}
                 </p>
               )}

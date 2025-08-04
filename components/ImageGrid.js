@@ -35,9 +35,9 @@ export function ImageGrid({ category }) {
               <Image
                 src={`${BACKEND_URL}/media/${pet.images[0]}`}
                 alt={pet.name}
-                width={300}
+                width={250}
                 height={250}
-                className="w-full h-[250px] object-cover"
+                className="h-[250px] object-cover"
               />
             </CardContent>
           </Card>
