@@ -264,7 +264,9 @@ export default function PetMapPage() {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-[var(--backgroundColor)] p-6 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
           <div className="flex justify-between mb-4">
-            <h3 className="text-xl font-bold text-black">Contact About {petStatus} Pet: {petName}</h3>
+            <h3 className="text-xl font-bold text-[var(--textColor)]">
+              Contact About {petStatus} Pet: {petName}
+            </h3>
             <button
               onClick={onClose}
               className="text-gray-400 hover:text-white"
@@ -275,10 +277,14 @@ export default function PetMapPage() {
 
           {success ? (
             <div className="p-4 mb-4 rounded-lg bg-green-600 text-white">
-              Your message has been sent successfully! The person who reported this pet will be notified.
+              Your message has been sent successfully! The person who reported
+              this pet will be notified.
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 text-black">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 text-[var(--textColor)]"
+            >
               {error && (
                 <div className="p-4 mb-4 rounded-lg bg-red-600 text-white">
                   {error}
@@ -286,13 +292,14 @@ export default function PetMapPage() {
               )}
 
               <div>
-                <p className="mb-4">
-                  Your contact information will be shared through our support team.
-                  You won&apos;t see their direct contact details, and they won&apos;t see yours unless both parties agree.
+                <p className="mb-4 opacity-55">
+                  Your contact information will be shared through our support
+                  team. You won&apos;t see their direct contact details, and
+                  they won&apos;t see yours unless both parties agree.
                 </p>
               </div>
 
-              <div>
+              <div className="text-[var(--textColor)]">
                 <label className="block mb-1">Your Name*</label>
                 <input
                   type="text"
@@ -335,9 +342,10 @@ export default function PetMapPage() {
                   onChange={handleChange}
                   className="w-full p-2 rounded-lg bg-[var(--background2)] text-[var(--textColor)]"
                   rows={4}
-                  placeholder={petLocation.status === "lost" ?
-                    "Describe where and when you saw the pet, any identifying features, etc." :
-                    "Describe your pet in detail to help confirm if this is your pet"
+                  placeholder={
+                    petLocation.status === "lost"
+                      ? "Describe where and when you saw the pet, any identifying features, etc."
+                      : "Describe your pet in detail to help confirm if this is your pet"
                   }
                   required
                 />
@@ -360,7 +368,6 @@ export default function PetMapPage() {
                       className="max-h-40 rounded-lg"
                       height={100}
                       width={100}
-
                     />
                   </div>
                 )}
@@ -409,7 +416,10 @@ export default function PetMapPage() {
             {locationPermission === "denied" && (
               <div className="p-4 mb-6 rounded-lg bg-yellow-600 text-white">
                 <p className="font-semibold">Location access denied</p>
-                <p className="text-sm">{locationError || "Please enable location permissions in your browser settings."}</p>
+                <p className="text-sm">
+                  {locationError ||
+                    "Please enable location permissions in your browser settings."}
+                </p>
                 <button
                   onClick={requestLocationPermission}
                   className="mt-2 py-1 px-3 rounded bg-yellow-700 text-white text-sm hover:bg-yellow-800"
@@ -422,37 +432,41 @@ export default function PetMapPage() {
             <div className="flex space-x-4 mb-6">
               <button
                 onClick={() => setView("all")}
-                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${view === "all"
-                  ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
-                  : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
-                  }`}
+                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${
+                  view === "all"
+                    ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
+                    : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
+                }`}
               >
                 All Pets
               </button>
               <button
                 onClick={() => setView("lost")}
-                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${view === "lost"
-                  ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
-                  : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
-                  }`}
+                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${
+                  view === "lost"
+                    ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
+                    : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
+                }`}
               >
                 Lost Pets
               </button>
               <button
                 onClick={() => setView("found")}
-                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${view === "found"
-                  ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
-                  : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
-                  }`}
+                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${
+                  view === "found"
+                    ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
+                    : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
+                }`}
               >
                 Found Pets
               </button>
               <button
                 onClick={() => setView("user")}
-                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${view === "user"
-                  ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
-                  : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
-                  }`}
+                className={`py-2 px-4 rounded-lg shadow-lg transition duration-200 ${
+                  view === "user"
+                    ? "bg-[var(--primaryColor)] text-[var(--textColor3)]"
+                    : "bg-[var(--background2)] text-[var(--textColor)] hover:bg-[var(--primary1)]"
+                }`}
               >
                 My Pets
               </button>
@@ -464,7 +478,7 @@ export default function PetMapPage() {
                     if (userLocation) {
                       setMapCenter(userLocation);
                       setMapZoom(20);
-                      setMapKey(prev => prev + 1); // Force re-render
+                      setMapKey((prev) => prev + 1); // Force re-render
                     }
                   }}
                   className="py-2 px-4 rounded-lg shadow-lg transition duration-200 bg-[var(--primary1)] text-[var(--textColor3)] hover:bg-[var(--primary2)]"
@@ -506,20 +520,24 @@ export default function PetMapPage() {
                 <Map
                   key={mapKey}
                   markers={[
-                    ...pets.map(pet => ({
+                    ...pets.map((pet) => ({
                       ...pet,
                       latitude: parseFloat(pet.latitude),
                       longitude: parseFloat(pet.longitude),
-                      image: pet.image_url || null
+                      image: pet.image_url || null,
                     })),
-                    ...(userLocation ? [{
-                      id: "user-location",
-                      latitude: userLocation[0],
-                      longitude: userLocation[1],
-                      animal_name: "Your Location",
-                      status: "user",
-                      isUserLocation: true
-                    }] : [])
+                    ...(userLocation
+                      ? [
+                          {
+                            id: "user-location",
+                            latitude: userLocation[0],
+                            longitude: userLocation[1],
+                            animal_name: "Your Location",
+                            status: "user",
+                            isUserLocation: true,
+                          },
+                        ]
+                      : []),
                   ]}
                   center={mapCenter}
                   zoom={mapZoom}
@@ -527,12 +545,12 @@ export default function PetMapPage() {
                   onMarkerClick={(pet) => {
                     setSelectedPet(pet);
                   }}
-                  isDark={localStorage.getItem("modeR") === "dark" ? true : false}
+                  isDark={
+                    localStorage.getItem("modeR") === "dark" ? true : false
+                  }
                 >
                   <MapCenterer center={mapCenter} zoom={mapZoom} />
                 </Map>
-
-
               </div>
             )}
 
@@ -541,17 +559,22 @@ export default function PetMapPage() {
 
               {pets.length === 0 ? (
                 <div className="p-4 rounded-lg bg-[var(--background2)]">
-                  <p>No {view === "all" ? "pets" : view + " pets"} with location data available.</p>
+                  <p>
+                    No {view === "all" ? "pets" : view + " pets"} with location
+                    data available.
+                  </p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
                   {pets.map((pet) => (
                     <div
                       key={pet.id}
                       className="p-4 rounded-lg bg-[var(--background2)] cursor-pointer hover:bg-[var(--primary1)] transition-colors"
                       onClick={() => {
-                        setMapCenter([parseFloat(pet.latitude), parseFloat(pet.longitude)]);
+                        setMapCenter([
+                          parseFloat(pet.latitude),
+                          parseFloat(pet.longitude),
+                        ]);
                         setMapZoom(16);
                         setSelectedPet(pet);
                       }}
@@ -570,19 +593,29 @@ export default function PetMapPage() {
                         )}
                         <div className="flex-grow">
                           <div className="font-semibold">{pet.animal_name}</div>
-                          <div>{pet.type} {pet.breed}</div>
-                          <div className={`font-medium ${pet.status === 'lost' ? 'text-red-400' :
-                            pet.status === 'found' ? 'text-green-400' : 'text-gray-400'
-                            }`}>
-                            Status: {pet.status || 'Unknown'}
+                          <div>
+                            {pet.type} {pet.breed}
+                          </div>
+                          <div
+                            className={`font-medium ${
+                              pet.status === "lost"
+                                ? "text-red-400"
+                                : pet.status === "found"
+                                ? "text-green-400"
+                                : "text-gray-400"
+                            }`}
+                          >
+                            Status: {pet.status || "Unknown"}
                           </div>
                           <div className="text-sm mt-2">
-                            {pet.last_seen_date ? `Last seen: ${pet.last_seen_date}` : ''}
+                            {pet.last_seen_date
+                              ? `Last seen: ${pet.last_seen_date}`
+                              : ""}
                           </div>
                         </div>
 
                         {/* Resolve button - only show in "user" view and if not already resolved */}
-                        {view === "user" && pet.status !== 'resolved' && (
+                        {view === "user" && pet.status !== "resolved" && (
                           <div className="flex items-center">
                             <button
                               onClick={(e) => handleResolveReport(pet.id, e)}
@@ -595,7 +628,6 @@ export default function PetMapPage() {
                       </div>
                     </div>
                   ))}
-
                 </div>
               )}
             </div>
@@ -604,10 +636,12 @@ export default function PetMapPage() {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-[var(--backgroundColor)] p-6 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between mb-4">
-                  <h3 className="text-xl font-bold text-black">{selectedPet.animal_name}</h3>
+                  <h3 className="text-xl font-bold text-[var(--textColor)]">
+                    {selectedPet.animal_name}
+                  </h3>
                   <button
                     onClick={() => setSelectedPet(null)}
-                    className="text-gray-400 hover:text-white"
+                    className="text-[var(--textColor)] bg-red-500 px-2 rounded-full hover:opacity-100 opacity-70 transition duration-75 ease-in-out"
                   >
                     ✕
                   </button>
@@ -625,20 +659,42 @@ export default function PetMapPage() {
                   </div>
                 )}
 
-                <div className="space-y-2 text-black">
-                  <p><span className="font-semibold">Type:</span> {selectedPet.type}</p>
-                  <p><span className="font-semibold">Breed:</span> {selectedPet.breed}</p>
-                  <p><span className="font-semibold">Category:</span> {selectedPet.category}</p>
-                  <p className={`font-medium ${selectedPet.status === 'lost' ? 'text-red-400' :
-                    selectedPet.status === 'found' ? 'text-green-400' : 'text-gray-400'
-                    }`}>
-                    <span className="font-semibold">Status:</span> {selectedPet.status}
+                <div className="space-y-2 text-[var(--textColor)]">
+                  <p>
+                    <span className="font-semibold">Type:</span>{" "}
+                    {selectedPet.type}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Breed:</span>{" "}
+                    {selectedPet.breed}
+                  </p>
+                  <p>
+                    <span className="font-semibold">Category:</span>{" "}
+                    {selectedPet.category}
+                  </p>
+                  <p
+                    className={`font-medium ${
+                      selectedPet.status === "lost"
+                        ? "text-red-400"
+                        : selectedPet.status === "found"
+                        ? "text-green-400"
+                        : "text-gray-400"
+                    }`}
+                  >
+                    <span className="font-semibold">Status:</span>{" "}
+                    {selectedPet.status}
                   </p>
                   {selectedPet.description && (
-                    <p><span className="font-semibold">Description:</span> {selectedPet.description}</p>
+                    <p>
+                      <span className="font-semibold">Description:</span>{" "}
+                      {selectedPet.description}
+                    </p>
                   )}
                   {selectedPet.last_seen_date && (
-                    <p><span className="font-semibold">Last seen:</span> {selectedPet.last_seen_date}</p>
+                    <p>
+                      <span className="font-semibold">Last seen:</span>{" "}
+                      {selectedPet.last_seen_date}
+                    </p>
                   )}
                   {selectedPet.status !== "resolved" ? (
                     <div className="pt-4">
@@ -654,8 +710,6 @@ export default function PetMapPage() {
                   ) : (
                     <></>
                   )}
-
-
                 </div>
               </div>
             </div>
@@ -667,9 +721,7 @@ export default function PetMapPage() {
               isOpen={showContactModal}
               onClose={() => setShowContactModal(false)}
             />
-
           )}
-
         </main>
         <Footer />
       </div>
